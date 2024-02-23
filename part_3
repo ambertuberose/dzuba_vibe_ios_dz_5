@@ -1,0 +1,49 @@
+class Student {
+    var name: String
+    var age: Int
+    var gpa: Double
+    
+    init(name: String, age: Int, gpa: Double) {
+        self.name = name
+        self.age = age
+        self.gpa = gpa
+    }
+    
+    // Метод для сортировки массива студентов по имени в алфавитном порядке
+    static func sortByName(_ students: inout [Student]) {
+        students.sort { $0.name < $1.name }
+    }
+    
+    // Метод для сортировки массива студентов по возрасту
+    static func sortByAge(_ students: inout [Student]) {
+        students.sort { $0.age < $1.age }
+    }
+    
+    // Метод для сортировки массива студентов по среднему баллу
+    static func sortByGPA(_ students: inout [Student]) {
+        students.sort { $0.gpa > $1.gpa }
+    }
+}
+
+// Пример использования
+var students = [
+    Student(name: "Alice", age: 18, gpa: 4.0),
+    Student(name: "Bob", age: 17, gpa: 3.5),
+    Student(name: "Charlie", age: 19, gpa: 3.8),
+    Student(name: "David", age: 18, gpa: 3.2)
+]
+
+print("До сортировки:")
+students.forEach { print($0.name, $0.age, $0.gpa) }
+
+Student.sortByName(&students)
+print("\nСортировка по имени:")
+students.forEach { print($0.name, $0.age, $0.gpa) }
+
+Student.sortByAge(&students)
+print("\nСортировка по возрасту:")
+students.forEach { print($0.name, $0.age, $0.gpa) }
+
+Student.sortByGPA(&students)
+print("\nСортировка по среднему баллу:")
+students.forEach { print($0.name, $0.age, $0.gpa) }
