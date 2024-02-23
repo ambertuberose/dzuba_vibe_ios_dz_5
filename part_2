@@ -1,0 +1,27 @@
+class House {
+    var width: Double
+    var height: Double
+    var isDestroyed: Bool = false
+    
+    init(width: Double, height: Double) {
+        self.width = width
+        self.height = height
+    }
+    
+    func create() {
+        let area = width * height
+        print("The house is created with an area of \(area) square units.")
+    }
+    
+    func destroy() {
+        isDestroyed = true
+        print("The house is destroyed.")
+    }
+}
+
+// Пример использования
+let myHouse = House(width: 10.0, height: 8.0)
+myHouse.create()
+
+// Дом был разрушен
+myHouse.destroy()
