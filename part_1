@@ -1,0 +1,59 @@
+// Родительский класс
+class Animal {
+    var species: String
+    
+    init(species: String) {
+        self.species = species
+    }
+    
+    func makeSound() {
+        print("The animal makes a sound.")
+    }
+}
+
+// Два класса-наследника
+class Dog: Animal {
+    var breed: String
+    
+    init(species: String, breed: String) {
+        self.breed = breed
+        super.init(species: species)
+    }
+    
+    override func makeSound() {
+        print("Woof woof!")
+    }
+    
+    func fetch() {
+        print("The dog fetches the ball.")
+    }
+}
+
+class Cat: Animal {
+    var color: String
+    
+    init(species: String, color: String) {
+        self.color = color
+        super.init(species: species)
+    }
+    
+    override func makeSound() {
+        print("Meow!")
+    }
+    
+    func scratch() {
+        print("The cat scratches the furniture.")
+    }
+}
+
+// Пример использования
+let animalInstance = Animal(species: "Unknown")
+animalInstance.makeSound()
+
+let dogInstance = Dog(species: "Canine", breed: "Labrador")
+dogInstance.makeSound()
+dogInstance.fetch()
+
+let catInstance = Cat(species: "Feline", color: "Gray")
+catInstance.makeSound()
+catInstance.scratch()
