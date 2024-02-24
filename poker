@@ -1,0 +1,173 @@
+import Foundation
+
+// Структура для представления карты
+struct Card {
+    var suit: String // масть
+    var rank: String // номинал
+    
+    init(suit: String, rank: String) {
+        self.suit = suit
+        self.rank = rank
+    }
+}
+
+// Генерация колоды карт
+func generateDeck() -> [Card] {
+    let suits = ["Черви", "Пики", "Бубны", "Трефы"]
+    let ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Валет", "Дама", "Король", "Туз"]
+    
+    var deck = [Card]()
+    for suit in suits {
+        for rank in ranks {
+            let card = Card(suit: suit, rank: rank)
+            deck.append(card)
+        }
+    }
+    return deck
+}
+
+// Выбор случайной карты из колоды
+func pickRandomCard(from deck: inout [Card]) -> Card? {
+    guard !deck.isEmpty else {
+        return nil
+    }
+    let randomIndex = Int.random(in: 0..<deck.count)
+    return deck.remove(at: randomIndex)
+}
+
+// Генерация покерной комбинации из пяти случайных карт
+func generatePokerHand() -> [Card] {
+    var deck = generateDeck()
+    var hand = [Card]()
+    for _ in 1...5 {
+        if let card = pickRandomCard(from: &deck) {
+            hand.append(card)
+        }
+    }
+    return hand
+}
+
+// Проверка комбинаций покера и вывод результата
+func checkHand(hand: [Card]) -> String {
+    let suits = Set(hand.map { $0.suit })
+    let ranks = Set(hand.map { $0.rank })
+    
+    if suits.count == 1 && isStraight(hand: hand) {
+        return "У вас стрит-флеш"
+    } else if suits.count == 1 {
+        return "У вас флеш"
+    } else if isStraight(hand: hand) {
+        return "У вас стрит"
+    } else if let fourOfAKindRank = checkFourOfAKind(ranks: ranks) {
+        return "У вас каре \(fourOfAKindRank)"
+    } else if let fullHouseRanks = checkFullHouse(ranks: ranks) {
+        return "У вас фулл хаус \(fullHouseRanks.0) и \(fullHouseRanks.1)"
+    } else if let threeOfAKindRank = checkThreeOfAKind(ranks: ranks) {
+        return "У вас сет \(threeOfAKindRank)"
+    } else if let twoPairsRanks = checkTwoPairs(ranks: ranks) {
+        return "У вас две пары \(twoPairsRanks.0) и \(twoPairsRanks.1)"
+    } else if let onePairRank = checkOnePair(ranks: ranks, hand: hand) {
+        return "У вас одна пара \(onePairRank)"
+    } else {
+        return "У вас ничего"
+    }
+}
+
+// Проверка стрита
+func isStraight(hand: [Card]) -> Bool {
+    let sortedRanks = hand.map { rankToValue($0.rank) }.sorted()
+    let distinctRanks = Set(sortedRanks)
+    let allRanksInOrder = distinctRanks.count == 5 && sortedRanks.last! - sortedRanks.first! == 4
+    let lowAceStraight = distinctRanks == Set([2, 3, 4, 5, 14])
+    let highAceStraight = distinctRanks == Set([10, 11, 12, 13, 14])
+    return allRanksInOrder || lowAceStraight || highAceStraight
+}
+
+// Проверка наличия четырех одинаковых номиналов
+func checkFourOfAKind(ranks: Set<String>) -> String? {
+    for rank in ranks {
+        if ranks.filter({ $0 == rank }).count == 4 {
+            return rank
+        }
+    }
+    return nil
+}
+
+// Проверка наличия фулл-хауса
+func checkFullHouse(ranks: Set<String>) -> (String, String)? {
+    let distinctRanks = Array(Set(ranks))
+    if distinctRanks.count == 2 {
+        let firstRankCount = ranks.filter { $0 == distinctRanks[0] }.count
+        let secondRankCount = ranks.filter { $0 == distinctRanks[1] }.count
+        if firstRankCount == 2 || secondRankCount == 2 {
+            return (distinctRanks[0], distinctRanks[1])
+        }
+    }
+    return nil
+}
+
+// Проверка наличия тройки
+func checkThreeOfAKind(ranks: Set<String>) -> String? {
+    for rank in ranks {
+        if ranks.filter({ $0 == rank }).count == 3 {
+            return rank
+        }
+    }
+    return nil
+}
+
+// Проверка наличия двух пар
+func checkTwoPairs(ranks: Set<String>) -> (String, String)? {
+    var pairs = [String]()
+    for rank in ranks {
+        if ranks.filter({ $0 == rank }).count == 2 {
+            pairs.append(rank)
+        }
+    }
+    if pairs.count >= 2 {
+        return (pairs[0], pairs[1])
+    }
+    return nil
+}
+
+// Проверка наличия одной пары
+func checkOnePair(ranks: Set<String>, hand: [Card]) -> String? {
+    var pairs = Set<String>()
+    for card in hand {
+        if !pairs.contains(card.rank) {
+            pairs.insert(card.rank)
+        } else {
+            return card.rank
+        }
+    }
+    return nil
+}
+
+// Преобразование номинала карты в числовое значение для проверки стрита
+func rankToValue(_ rank: String) -> Int {
+    switch rank {
+    case "2"..."9":
+        return Int(rank)!
+    case "10":
+        return 10
+    case "Валет":
+        return 11
+    case "Дама":
+        return 12
+    case "Король":
+        return 13
+    case "Туз":
+        return 14
+    default:
+        return 0
+    }
+}
+
+// Генерация покерной комбинации и проверка
+let pokerHand = generatePokerHand()
+print("Ваши карты:")
+for card in pokerHand {
+    print("\(card.rank) \(card.suit)")
+}
+let result = checkHand(hand: pokerHand)
+print(result)
